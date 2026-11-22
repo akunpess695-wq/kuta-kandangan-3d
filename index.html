@@ -755,6 +755,7 @@ input[type="range"].banua-slider::-webkit-slider-thumb {
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { initWardrobe } from "./wardrobe.js";
 import * as SkeletonUtils from "three/addons/utils/SkeletonUtils.js";
 
 /* ============================================================================
@@ -4562,6 +4563,8 @@ function initDiorama() {
     }
     playerAvatar.add(manRoot);
     playerAvatar.userData.mannequinyRoot = manRoot;
+    // Lemari Baju: pakaian adat Banjar + wajah (dianalisis di pose awal, sebelum animasi mulai)
+    initWardrobe(manRoot);
 
     if (gltf.animations && gltf.animations.length > 0) {
       const mixer = new THREE.AnimationMixer(manRoot);
