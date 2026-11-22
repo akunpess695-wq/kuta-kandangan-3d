@@ -1612,33 +1612,36 @@ const POLYFORK_CURATED_ASSETS = [
     scale: 0.85,
     isAnimatedMopedLoop: true,
     placements: [
-      // Loop 1: Central East-South Block Loop (Tugu Dodol -> Jl. Merah Johansyah -> Jl. Panglima Batur -> Jl. Letjen Sutoyo -> Jl. Pangeran Antasari)
+      // Loop 1: Central East-South Block Loop (Follows Jl. Merah Johansyah -> Jl. Panglima Batur -> Jl. Letjen Sutoyo -> Jl. Pangeran Antasari -> curves cleanly around Bundaran Tugu Dodol R=4.6!)
       {
         speed: 4.5,
         phaseOffset: 0.08,
         shirtColor: 0xe9b349,
         hatColor: 0x16392b,
         waypoints: [
-          [5.0, -1.2],
-          [22.8, -1.2],
+          [5.4, 1.3],
+          [22.8, 1.3],
           [22.8, 20.8],
-          [1.2, 20.8],
-          [1.2, 5.0]
+          [1.3, 20.8],
+          [1.3, 5.4],
+          [3.6, 3.6]
         ]
       },
-      // Loop 2: North-East Block Loop (Tugu Dodol -> Jl. A. Yani Utara -> Jl. Pemuda -> Bundaran Ketupat II -> Jl. Panglima Batur -> Jl. Merah Johansyah)
+      // Loop 2: North-East Block Loop (Follows Jl. Ahmad Yani Utara -> curves cleanly around Bundaran Tugu Dodol -> Jl. Merah Johansyah -> Jl. Panglima Batur -> Bundaran Ketupat II -> Jl. Pemuda)
       {
         speed: 4.6,
         phaseOffset: 0.45,
         shirtColor: 0xc84b31,
         hatColor: 0xf7f0db,
         waypoints: [
-          [-1.2, -5.0],
-          [-1.2, -20.8],
-          [18.5, -20.8],
-          [22.8, -16.5],
-          [22.8, -1.2],
-          [5.0, -1.2]
+          [1.0, -5.4],
+          [3.6, -3.6],
+          [5.4, -1.3],
+          [22.6, -1.3],
+          [22.6, -17.2],
+          [20.4, -19.6],
+          [18.8, -21.2],
+          [1.0, -21.2]
         ]
       }
     ]
@@ -3812,37 +3815,60 @@ class KandanganWorldBuilder {
     const v4 = makeCarWithDriver(carColors[3]);
     town.add(v1, v2, v3, v4);
 
-    // 1. One-Way Clockwise Perimeter Loop around NW Block & Bridges (Jembatan Antaluddin -> West Bank -> Jembatan Tebing Rumbih -> Jl. A. Yani)
+    // 1. One-Way Clockwise Perimeter Loop around NW Block & Bridges (Jembatan Antaluddin -> West Bank -> Jembatan Tebing Rumbih -> Jl. A. Yani -> curves cleanly around Bundaran Tugu Dodol R=4.6!)
     const alunAlunOneWayLoop = [
-      [-5.2, -1.2],
-      [-24.2, -1.2],
-      [-24.2, -21.2],
-      [-1.0, -21.2],
-      [-1.0, -4.8]
+      [-5.4, -1.0],
+      [-24.2, -1.0],
+      [-24.2, -21.4],
+      [-0.8, -21.4],
+      [-0.8, -5.4],
+      [-3.6, -3.6]
     ];
     registerLoopVehicle(v1, alunAlunOneWayLoop, 3.8, 0.0);
     registerLoopVehicle(v2, alunAlunOneWayLoop, 3.8, 0.5);
 
-    // 2. Divided Dual Carriageway Loop along Jl. Merah Johansyah -> Jl. H.M. Yusi (East Spine X=0..24 & Z=0..-18)
+    // 2. Divided Dual Carriageway Loop along Jl. Merah Johansyah -> Jl. H.M. Yusi (Eastbound South Lane Z=+1.4, Northbound East Lane X=25.4 -> loops around Bundaran Ketupat II R=4.5 -> Southbound West Lane X=22.6 -> Westbound North Lane Z=-1.4 -> loops around Bundaran Tugu Dodol R=4.6!)
     const merahJohansyahLoop = [
-      [5.2, -1.4],
-      [22.6, -1.4],
-      [22.6, -17.0],
-      [25.4, -17.0],
+      [5.4, 1.4],
       [25.4, 1.4],
-      [5.2, 1.4]
+      [25.4, -17.2],
+      [27.4, -18.8],
+      [28.5, -22.0],
+      [27.2, -25.2],
+      [24.0, -26.5],
+      [20.8, -25.2],
+      [19.5, -22.0],
+      [20.8, -18.8],
+      [22.6, -17.2],
+      [22.6, -1.4],
+      [5.4, -1.4],
+      [3.8, -2.8],
+      [4.6, 0.0],
+      [3.8, 2.8]
     ];
     registerLoopVehicle(v3, merahJohansyahLoop, 3.9, 0.2);
 
-    // 3. Divided Dual Carriageway Loop along Jl. Pangeran Antasari & SE Block (X=0..24 & Z=0..22)
+    // 3. Divided Dual Carriageway Loop along Jl. Pangeran Antasari & SE Block (Follows Southbound West Lane X=-1.4 -> Jl. Letjen Sutoyo -> Jl. Panglima Batur -> Jl. Merah Johansyah -> curves around Bundaran Tugu Dodol!)
     const antasariDividedLoop = [
-      [1.4, 5.2],
-      [1.4, 21.0],
-      [23.0, 21.0],
-      [23.0, 1.4],
-      [5.2, 1.4]
+      [-1.4, 5.4],
+      [-1.4, 21.2],
+      [23.2, 21.2],
+      [23.2, -1.4],
+      [5.4, -1.4],
+      [3.6, -3.6],
+      [0.0, -4.6],
+      [-3.6, -3.6],
+      [-4.6, 0.0],
+      [-3.6, 3.6]
     ];
     registerLoopVehicle(v4, antasariDividedLoop, 3.6, 0.4);
+
+    // Enable shadow receiving on ground & urban blocks (`threejs-materials-lighting` skill)
+    town.traverse((obj) => {
+      if (obj.isMesh) {
+        obj.receiveShadow = true;
+      }
+    });
 
     targetScene.add(town);
     this.loadCuratedPolyforkAssets(town);
@@ -3955,6 +3981,27 @@ class KandanganWorldBuilder {
         const p1 = v.pts[(segIdx + 1) % v.pts.length];
         const t = v.segLens[segIdx] > 0 ? rem / v.segLens[segIdx] : 0;
         v.mesh.position.lerpVectors(p0, p1, t);
+
+        // Smooth bridge deck elevation profile so vehicles smoothly ride OVER Jembatan Antaluddin, Tebing Rumbih & Lok Lua decks instead of clipping through them!
+        const vx = v.mesh.position.x;
+        const vz = v.mesh.position.z;
+        let bridgeY = 0.04;
+        // Jembatan Antaluddin: X in [-20.5..-10.5], Z near 0
+        if (Math.abs(vz) < 2.8 && vx > -20.5 && vx < -10.5) {
+          const edgeDist = Math.min(Math.abs(vx - -20.5), Math.abs(vx - -10.5));
+          bridgeY = 0.04 + Math.min(1, edgeDist / 1.5) * 0.34;
+        }
+        // Jembatan Tebing Rumbih: X in [-20.8..-11.2], Z near -22
+        else if (Math.abs(vz - -22.0) < 2.6 && vx > -20.8 && vx < -11.2) {
+          const edgeDist = Math.min(Math.abs(vx - -20.8), Math.abs(vx - -11.2));
+          bridgeY = 0.04 + Math.min(1, edgeDist / 1.5) * 0.34;
+        }
+        // Jembatan Lok Lua: X near 0, Z in [27.0..37.0]
+        else if (Math.abs(vx) < 2.8 && vz > 27.0 && vz < 37.0) {
+          const edgeDist = Math.min(Math.abs(vz - 27.0), Math.abs(vz - 37.0));
+          bridgeY = 0.04 + Math.min(1, edgeDist / 1.5) * 0.34;
+        }
+        v.mesh.position.y = bridgeY;
         v.mesh.rotation.y = Math.atan2(p1.x - p0.x, p1.z - p0.z);
       }
     }
@@ -4443,10 +4490,17 @@ function initDiorama() {
   // Expose window.renderer and window.scene for threejs-scene-setup & threejs-materials-lighting runtime smoke verification
   Object.assign(window, { renderer, scene, playerState });
 
+  // Enable shadow casting & receiving across the town & landmark meshes (`threejs-materials-lighting` skill)
   for (const lm of LANDMARKS) {
     if (lm.modelType === "none") continue;
     const model = worldBuilder.buildLandmarkByType(lm.modelType);
     model.position.set(...lm.position);
+    model.traverse((obj) => {
+      if (obj.isMesh) {
+        obj.castShadow = true;
+        obj.receiveShadow = true;
+      }
+    });
 
     // Disable or widen the yellow selection ring on roundabouts so no yellow ring ever cuts through the circulating roundabout lane!
     const isRoundaboutMonument = lm.modelType === "dodol" || lm.modelType === "ketupat2" || lm.modelType === "ketupat1";
@@ -4480,7 +4534,8 @@ function initDiorama() {
   playerAvatar.visible = false;
   scene.add(playerAvatar);
 
-  // Load GDQuest Open 3D Mannequin (`assets/3d/mannequiny-0.3.0.glb`) per `threejs-gltf-loading` skill, with automatic fallback to official GitHub Raw CDN if deployed as a lightweight single-file bundle
+  // Load GDQuest Open 3D Mannequin (`mannequiny-0.3.0.glb`) with zero-404 environment detection:
+  // On localhost uses local `assets/3d/mannequiny-0.3.0.glb`; on GitHub Pages / static cloud uses jsDelivr/GitHub CDN directly so the browser console has zero 404 errors!
   const mannequinLoader = new GLTFLoader();
   mannequinLoader.setCrossOrigin("anonymous");
   const attachMannequinyGltf = (gltf) => {
@@ -4519,17 +4574,20 @@ function initDiorama() {
       transitionMannequinyClip("idle", 0.15, 1.0);
     }
   };
+  const isLocalHost = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+  const primaryMannequinUrl = isLocalHost
+    ? "assets/3d/mannequiny-0.3.0.glb"
+    : "https://cdn.jsdelivr.net/gh/GDQuest/godot-3d-mannequin@master/godot/assets/3d/mannequiny/mannequiny-0.3.0.glb";
+  const fallbackMannequinUrl = isLocalHost
+    ? "https://cdn.jsdelivr.net/gh/GDQuest/godot-3d-mannequin@master/godot/assets/3d/mannequiny/mannequiny-0.3.0.glb"
+    : "assets/3d/mannequiny-0.3.0.glb";
+
   mannequinLoader.load(
-    "assets/3d/mannequiny-0.3.0.glb",
+    primaryMannequinUrl,
     attachMannequinyGltf,
     undefined,
     () => {
-      mannequinLoader.load(
-        "https://raw.githubusercontent.com/GDQuest/godot-3d-mannequin/master/godot/assets/3d/mannequiny/mannequiny-0.3.0.glb",
-        attachMannequinyGltf,
-        undefined,
-        () => {}
-      );
+      mannequinLoader.load(fallbackMannequinUrl, attachMannequinyGltf, undefined, () => {});
     }
   );
 
@@ -4638,8 +4696,9 @@ function animateLoop(now) {
       playerState.vx = (camRight.x * nx - camDir.x * nz) * speed;
       playerState.vz = (camRight.z * nx - camDir.z * nz) * speed;
 
-      playerState.x = THREE.MathUtils.clamp(playerState.x + playerState.vx * delta, -45, 52);
-      playerState.z = THREE.MathUtils.clamp(playerState.z + playerState.vz * delta, -24, 38);
+      // Full map exploration bounds covering Simpur (West -45) to Loksado/Haratai (East 54), North (-34) to Hamalau/Lok Lua (South 46)
+      playerState.x = THREE.MathUtils.clamp(playerState.x + playerState.vx * delta, -45, 54);
+      playerState.z = THREE.MathUtils.clamp(playerState.z + playerState.vz * delta, -34, 46);
       playerState.rotY = Math.atan2(playerState.vx, playerState.vz);
     } else {
       playerState.vx = 0;
@@ -4780,9 +4839,10 @@ function updateProjectedBubbles() {
     }
   }
 
-  // Position Suara Kuta Floating Bubble
+  // Position Suara Kuta Floating Bubble (hide while onboarding tour is active so cards never stack on top of each other!)
   const suaraCard = document.getElementById("suaraPopup");
-  if (!state.suaraEnabled || state.hudHidden || state.jelajahActive) {
+  const onboardingVisible = !document.getElementById("onboardingCard")?.classList.contains("hidden");
+  if (!state.suaraEnabled || state.hudHidden || state.jelajahActive || onboardingVisible) {
     suaraCard.classList.add("hidden");
     return;
   }
@@ -4952,11 +5012,34 @@ function startJelajah3D() {
   state.jelajahActive = true;
   stopCinematicTour();
   const lm = getLandmark(state.selectedLandmarkId);
-  playerState.x = lm.position[0];
-  playerState.z = lm.position[2] + 4.2;
+  // Safe spawn offset outside roundabouts & monument pedestals so avatar never spawns inside Tugu Dodol / Ketupat!
+  let spawnX = lm.position[0];
+  let spawnZ = lm.position[2] + 5.2;
+  if (lm.id === "tugu-dodol") {
+    spawnX = 3.2;
+    spawnZ = 5.4;
+  } else if (lm.id === "tugu-ketupat-alfalah") {
+    spawnX = 24.0;
+    spawnZ = -15.4;
+  } else if (lm.id === "tugu-ketupat-hamalau") {
+    spawnX = -25.0;
+    spawnZ = 25.8;
+  } else if (lm.id === "air-terjun-haratai") {
+    spawnX = 43.0;
+    spawnZ = -6.0;
+  }
+  playerState.x = spawnX;
+  playerState.z = spawnZ;
   playerState.y = 0.08;
+  playerState.vy = 0;
+  playerState.rotY = 0;
+  playerAvatar.position.set(spawnX, 0.08, spawnZ);
   playerAvatar.visible = true;
 
+  // Hide World Chat dock & onboarding card during Jelajah 3D (use inline style.display to override Tailwind `sm:block`!)
+  const chatDock = document.getElementById("worldChatDock");
+  if (chatDock) chatDock.style.display = "none";
+  document.getElementById("onboardingCard")?.classList.add("hidden");
   document.getElementById("jelajahHud").classList.remove("hidden");
   document.getElementById("mainBottomBar").classList.add("hidden");
   showToast(`Mode Jelajah 3D aktif! Gunakan WASD / Panah atau Joystick layar.`);
@@ -4967,6 +5050,10 @@ function stopJelajah3D() {
   if (playerAvatar) playerAvatar.visible = false;
   document.getElementById("jelajahHud").classList.add("hidden");
   document.getElementById("mainBottomBar").classList.remove("hidden");
+  const chatDock = document.getElementById("worldChatDock");
+  if (chatDock && !state.hudHidden) {
+    chatDock.style.display = "";
+  }
   selectLandmark(state.selectedLandmarkId, true);
 }
 
@@ -5022,8 +5109,11 @@ function setHudHidden(hidden, isCinematic = false) {
   state.hudHidden = hidden;
   document.getElementById("topLeftHud").classList.toggle("hidden", hidden);
   document.getElementById("topRightHud").classList.toggle("hidden", hidden);
-  document.getElementById("worldChatDock").classList.toggle("hidden", hidden);
-  document.getElementById("mainBottomBar").classList.toggle("hidden", hidden);
+  const chatDock = document.getElementById("worldChatDock");
+  if (chatDock) {
+    chatDock.style.display = hidden || state.jelajahActive ? "none" : "";
+  }
+  document.getElementById("mainBottomBar").classList.toggle("hidden", hidden || state.jelajahActive);
   document.getElementById("btnRestoreHud").classList.toggle("hidden", !hidden || isCinematic);
 }
 
@@ -5092,8 +5182,8 @@ function renderRakatHubTab(tab) {
     `;
     document.getElementById("btnHubCamFront")?.addEventListener("click", () => selectLandmark("rakat-hub-tower", true));
     document.getElementById("btnHubCamBack")?.addEventListener("click", () => {
-      desiredCamPos.set(-3.5, 6.8, -15.5);
-      desiredTarget.set(-3.5, 2.0, -7.5);
+      desiredCamPos.set(-5.0, 6.8, -14.8);
+      desiredTarget.set(-5.0, 2.2, -6.2);
       isFlying = true;
     });
   } else if (tab === "warga") {
@@ -6033,12 +6123,20 @@ function bindUIEvents() {
 
   // Jelajah 3D Controls (Keyboard + Touch Joystick + Buttons)
   window.addEventListener("keydown", (e) => {
+    // Never hijack typing inside text inputs, textareas, or selects (Pandiran Dunia, Buku Tamu, AI Ask, etc.)
+    const tag = document.activeElement?.tagName;
+    if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") {
+      if (e.key === "Escape") document.activeElement.blur();
+      return;
+    }
+
     const k = e.key.toLowerCase();
     if (k === "w" || e.key === "ArrowUp") playerState.keys.w = true;
     if (k === "s" || e.key === "ArrowDown") playerState.keys.s = true;
     if (k === "a" || e.key === "ArrowLeft") playerState.keys.a = true;
     if (k === "d" || e.key === "ArrowRight") playerState.keys.d = true;
     if (e.key === " " && state.jelajahActive && playerState.y <= 0.09) {
+      e.preventDefault();
       playerState.vy = 6.8;
     }
     if (e.key === "Escape") {
@@ -6139,16 +6237,28 @@ window.addEventListener("DOMContentLoaded", () => {
   initDiorama();
   fetchLiveKandanganWeather();
 
-  // Periodic online visitor join notification toast (like Bumi Murakata)
+  // Periodic online visitor join notification toast (only after splash is closed)
   setTimeout(() => {
-    const code = Math.floor(1000 + Math.random() * 9000).toString(16).toUpperCase();
-    showToast(`🟢 Tamu #${code} hanyar masuk ka peta Kuta Kandangan`);
-  }, 9000);
+    const splashHidden = document.getElementById("cinematicSplash")?.classList.contains("hidden");
+    if (splashHidden) {
+      const code = Math.floor(1000 + Math.random() * 9000).toString(16).toUpperCase();
+      showToast(`🟢 Tamu #${code} hanyar masuk ka peta Kuta Kandangan`);
+    }
+  }, 12000);
+
+  // Automatic Dinamis weather cycle refresh every 15s when `dinamis` mode is selected
+  setInterval(() => {
+    if (state.weatherMode === "dinamis") {
+      applyWeatherMode("dinamis");
+    }
+  }, 15000);
 });
 
 </script>
 </body>
 </html>
+
+
 
 
 
