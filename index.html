@@ -1241,6 +1241,16 @@ const LANDMARKS = [
     shortDesc: "Rumah panjang panggung Balai Adat Malaris di kaki Pegunungan Meratus Loksado lengkap dengan lumbung padi terasering dan Pohon Kariwaya raksasa."
   }
 ];
+// [OSM] Posisi landmark pada tata letak OSM (x, z). Posisi & kamera digeser dengan selisih yang sama.
+const LANDMARK_OSM_POS = {"lapangan-lambung-mangkurat": [-17.5, -11.0], "tugu-ketupat-alfalah": [54.4, -25.9], "tugu-ketupat-hamalau": [-72.5, 100.0], "taman-palidangan-sehati": [19.5, -22.3], "rakat-hub-tower": [-12.0, -3.6], "layar-jejak-kandangan": [-22.0, -3.0], "kantor-bupati-hss": [-1.4, -17.9], "gedung-dprd-hss": [15.4, -3.0], "rsud-hasan-basry": [-30.0, 40.0], "papan-loker-3d": [23.0, -9.0], "masjid-agung-taqwa": [30.0, 22.0], "masjid-baangkat-suada": [-47.0, 11.5], "monumen-divisi-alri": [40.6, 41.6], "papan-droplink-3d": [17.2, 7.1], "pasar-los-batu": [51.5, 60.0], "gerbang-wisata-loksado": [117.8, -31.9], "air-terjun-haratai": [115.0, -50.0], "balai-adat-malaris": [125.0, -8.0], "jembatan-antaluddin": [-23.1, 15.8], "bamboo-rafting-amandit": [-26.8, 6.2]};
+for (const lm of LANDMARKS) {
+  const t = LANDMARK_OSM_POS[lm.id];
+  if (!t) continue;
+  const dx = t[0] - lm.position[0], dz = t[1] - lm.position[2];
+  lm.position = [t[0], lm.position[1], t[1]];
+  if (lm.cameraPosition) lm.cameraPosition = [lm.cameraPosition[0] + dx, lm.cameraPosition[1], lm.cameraPosition[2] + dz];
+}
+
 
 const INITIAL_GUESTBOOK = {
   "tugu-dodol": [
@@ -3139,7 +3149,7 @@ class KandanganWorldBuilder {
       { cx: -36.0, cz: 0.0, w: 8.2, d: 8.2, mat: lotSandMat },    // Far West Simpur Block: Masjid Su'ada (Masjid Ba'angkat 1908)
       { cx: 31.0, cz: 22.0, w: 7.4, d: 7.4, mat: lotSandMat }     // Mandapai SE Block: Monumen Proklamasi 17 Mei 1949
     ];
-    for (const b of blocks) {
+    for (const b of []) { // [OSM] blok grid lama dinonaktifkan
       const blk = new THREE.Group();
       blk.position.set(b.cx, 0, b.cz);
       const curbPad = new THREE.Mesh(new THREE.BoxGeometry(b.w, 0.12, b.d), sidewalkMat);
@@ -3403,6 +3413,32 @@ class KandanganWorldBuilder {
       }
     }
 
+    // [OSM] Bangunan dari OSM diekstrusi (lewati yang berdekatan dengan landmark atau berupa gedung DPRD)
+    {
+      const wallMats = [0xf2e8cf, 0xe8f0e4, 0xf5efe0, 0xefe5d0].map(c => new THREE.MeshStandardMaterial({ color: c, flatShading: true }));
+      const roofMats = [0xb84a39, 0x2c6e63, 0xc46d1b, 0x2e7d52].map(c => new THREE.MeshStandardMaterial({ color: c, flatShading: true }));
+      OSM.buildings.forEach((bd, i) => {
+        if (bd.n && /DPRD/i.test(bd.n)) return;
+        const pts = bd.p;
+        const cx = pts.reduce((a, q) => a + q[0], 0) / pts.length, cz = pts.reduce((a, q) => a + q[1], 0) / pts.length;
+        if (Math.hypot(cx, cz) < 9) return;
+        if (LANDMARKS.some(lm => lm.modelType !== "none" && Math.hypot(lm.position[0] - cx, lm.position[2] - cz) < 7)) return;
+        const shape = new THREE.Shape(pts.map(([x, z]) => new THREE.Vector2(x - cx, -(z - cz))));
+        const h = 1.3 + (i * 37 % 10) * 0.12;
+        const geo = new THREE.ExtrudeGeometry(shape, { depth: h, bevelEnabled: false });
+        geo.rotateX(-Math.PI / 2);
+        const m = new THREE.Mesh(geo, wallMats[i % 4]);
+        const roofGeo = new THREE.ExtrudeGeometry(shape, { depth: 0.12, bevelEnabled: false });
+        roofGeo.rotateX(-Math.PI / 2);
+        const roof = new THREE.Mesh(roofGeo, roofMats[(i + 1) % 4]);
+        roof.position.y = h;
+        const g = new THREE.Group();
+        g.position.set(cx, 0.03, cz);
+        g.add(m, roof);
+        town.add(g);
+      });
+    }
+
     // --- 3. REALISTIC WIDE MEANDERING SUNGAI AMANDIT & 3 ARCHITECTURAL BRIDGES ---
     // Flows strictly in the clear river buffer channel so it NEVER overlaps any building or block:
     //   - Enters from Loksado East [47, -5] -> [41, 14] -> Bamboo Rafting [37, 22]
@@ -3601,8 +3637,8 @@ class KandanganWorldBuilder {
     const hullMat = new THREE.MeshStandardMaterial({ color: 0x7f4f24, flatShading: true });
     const canopyMat = new THREE.MeshStandardMaterial({ color: 0xd98a1a, flatShading: true });
     for (const bc of [
-      { x: -15.5, z: 11.5, baseZ: 11.5, amp: 1.8, phase: 0, rotY: 0.05 },
-      { x: 11.0, z: 32.0, baseZ: 32.0, amp: 1.2, phase: 2.1, rotY: Math.PI / 2 }
+      { x: -16.1, z: 25.1, baseZ: 25.1, amp: 1.0, phase: 0, rotY: 0.5 },
+      { x: 3.0, z: 47.4, baseZ: 47.4, amp: 1.0, phase: 2.1, rotY: 1.0 }
     ]) {
       const boat = new THREE.Group();
       const hull = new THREE.Mesh(new THREE.BoxGeometry(0.76, 0.28, 2.3), hullMat);
@@ -3620,8 +3656,8 @@ class KandanganWorldBuilder {
     this.bambooRafts = [];
     const bambooMat = new THREE.MeshStandardMaterial({ color: 0xa4c639, flatShading: true });
     for (const rc of [
-      { baseX: 37.5, baseZ: 21.5, amp: 2.0, phase: 0.4 },
-      { baseX: 25.0, baseZ: 31.0, amp: 1.8, phase: 2.5 }
+      { baseX: -39.0, baseZ: -9.6, amp: 1.0, phase: 0.4 },
+      { baseX: -33.0, baseZ: -3.8, amp: 1.0, phase: 2.5 }
     ]) {
       const raft = new THREE.Group();
       for (let b = -2; b <= 2; b++) {
@@ -3645,7 +3681,7 @@ class KandanganWorldBuilder {
     const wallCols = [0xf2e8cf, 0xe8f0e4, 0xf5efe0, 0xefe5d0];
     const roofCols = [0xb84a39, 0x2c6e63, 0xc46d1b, 0x2e7d52];
     const housePositions = [
-      [18.5, 15.2], [18.5, 18.4], [5.5, -14.5], [-32.5, 11.5], [-32.5, -9.5]
+      
     ];
     housePositions.forEach(([hx, hz], i) => {
       const h = 2.1 + (i % 2) * 0.35;
@@ -3793,7 +3829,15 @@ class KandanganWorldBuilder {
       return c;
     };
 
-    const registerLoopVehicle = (mesh, waypoints, speed, phaseOffset = 0) => {
+    // [OSM] Kendaraan berputar di jalan OSM terpanjang (pergi di satu lajur, pulang di lajur sebelahnya)
+    const osmLoops = OSM.roads.filter(r => !r.b && r.w >= 4.4).map(r => r.p.filter(([x, z]) => Math.hypot(x, z) > 8)).filter(p => p.length >= 2)
+      .sort((a, b) => b.length - a.length).slice(0, 6).map(p => {
+        const off = (q, i, sd) => { const a = p[Math.max(0, i - 1)], b = p[Math.min(p.length - 1, i + 1)]; const dx = b[0] - a[0], dz = b[1] - a[1], l = Math.hypot(dx, dz) || 1; return [q[0] - dz / l * sd, q[1] + dx / l * sd]; };
+        return [...p.map((q, i) => off(q, i, 1.0)), ...p.map((q, i) => off(q, i, -1.0)).reverse()];
+      });
+    let osmLoopIdx = 0;
+    const registerLoopVehicle = (mesh, waypointsOld, speed, phaseOffset = 0) => {
+      const waypoints = osmLoops.length ? osmLoops[osmLoopIdx++ % osmLoops.length] : waypointsOld;
       const pts = waypoints.map(([wx, wz]) => new THREE.Vector3(wx, 0.04, wz));
       const segLens = [];
       let totalLen = 0;
