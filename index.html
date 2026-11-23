@@ -3192,7 +3192,7 @@ class KandanganWorldBuilder {
 
       // Segmented outer curb ring: leaves open gaps at every incoming road approach angle so no curb line crosses the road!
       const curbSegs = 48;
-      const gapHalfAngle = Math.asin(Math.min(0.95, 2.95 / outerR)); // angular half-width of road opening
+      const gapHalfAngle = Math.asin(Math.min(0.95, 1.9 / outerR)); // angular half-width of road opening
       for (let i = 0; i < curbSegs; i++) {
         const aMid = ((i + 0.5) / curbSegs) * Math.PI * 2;
         // Note: In Three.js RingGeometry rotated by rotation.x = -Math.PI / 2:
@@ -3242,7 +3242,7 @@ class KandanganWorldBuilder {
 
     // Build the 3 Iconic Kandangan Roundabouts with road approach openings so no curb blocks the roundabout circle:
     // 1. Bundaran Tugu Dodol [0, 0] (4 approaches: South 0, East PI/2, North PI, West -PI/2)
-    addTrueRoundabout(0, 0, 3.1, 6.2, [0, Math.PI / 2, Math.PI, -Math.PI / 2]);
+    addTrueRoundabout(0, 0, 2.6, 5.0, [-144, 118, -48, 34].map(d => d * Math.PI / 180)); // [OSM] ukuran & arah jalan masuk sesuai OSM
     // 2. Bundaran Tugu Ketupat II (Jl. H.M. Yusi – Melati – Al Falah) [24, -22] (3 approaches: North PI, South 0, West -PI/2)
     // [OSM] dihapus: addTrueRoundabout(24, -22, 3.0, 6.0, [0, Math.PI, -Math.PI / 2]);
     // 3. Bundaran Tugu Ketupat Hamalau (Gerbang Selatan HSS) [-25, 36] (North approach PI)
@@ -3397,10 +3397,10 @@ class KandanganWorldBuilder {
     // so the straight road and its curbs/markings STOP cleanly at the outer perimeter of the roundabout and NEVER cut into the circular lane!
 
     // [OSM] Jaringan jalan dari map_osm.xml (osm-data.js), tata letak asli, jarak dipadatkan.
-    const OSM_R = 6.2; // jari-jari bundaran Tugu Dodol pada model
+    const OSM_R = 5.0; // jari-jari bundaran Tugu Dodol pada model
     for (const rd of OSM.roads) {
       if (rd.b) continue; // jembatan digambar terpisah
-      const curbsOn = rd.w >= 4.4;
+      const curbsOn = rd.w >= 2.9;
       for (let k = 0; k + 1 < rd.p.length; k++) {
         const pA = rd.p[k], pB = rd.p[k + 1];
         const dA = Math.hypot(pA[0], pA[1]), dB = Math.hypot(pB[0], pB[1]);
