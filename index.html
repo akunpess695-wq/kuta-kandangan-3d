@@ -3264,24 +3264,6 @@ class KandanganWorldBuilder {
       addFlushJunction(jx, jz, jr);
     }
 
-    // Quad datar (menghadap atas) yang dihitung langsung dari arah jalan (ux,uz) -> asphalt/garis SELALU searah jalan,
-    // tanpa bergantung pada urutan rotasi Euler.
-    const pushFlatQuad = (pos, cx, cz, ux, uz, hl, hw, y) => {
-      const nx = -uz, nz = ux;
-      const c = [[-1, -1], [1, -1], [1, 1], [-1, 1]].map(([su, sw]) => [
-        cx + ux * hl * su + nx * hw * sw, y, cz + uz * hl * su + nz * hw * sw
-      ]);
-      for (const k of [0, 2, 1, 0, 3, 2]) pos.push(...c[k]);
-    };
-    const flatMesh = (pos, mat) => {
-      const g = new THREE.BufferGeometry();
-      g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
-      const nrm = new Float32Array(pos.length);
-      for (let i = 1; i < nrm.length; i += 3) nrm[i] = 1;
-      g.setAttribute("normal", new THREE.BufferAttribute(nrm, 3));
-      return new THREE.Mesh(g, mat);
-    };
-
     const addRoadSegment = (pA, pB, { width = 4.8, oneWay = false, twoWay = true, median = false, curbs = true, trimStart = 0, trimEnd = 0 }) => {
       const rawDx = pB[0] - pA[0];
       const rawDz = pB[1] - pA[1];
@@ -3300,11 +3282,12 @@ class KandanganWorldBuilder {
       const midZ = (sA[1] + sB[1]) / 2;
 
       // Continuous Asphalt surface (meets flush with the roundabout outer edge without poking inside the roundabout circle)
-      {
-        const rp = [];
-        pushFlatQuad(rp, midX, midZ, ux, uz, (len + 0.6) / 2, width / 2, 0.02);
-        town.add(flatMesh(rp, asphaltMat));
-      }
+      const roadGeo = new THREE.PlaneGeometry(width, len + 0.6);
+      roadGeo.rotateX(-Math.PI / 2);
+      const road = new THREE.Mesh(roadGeo, asphaltMat);
+      road.rotation.y = angleY;
+      road.position.set(midX, 0.02, midZ);
+      town.add(road);
 
       // Raised sidewalk curbs along both outer edges (trimmed back cleanly so they never enter roundabouts or intersections)
       if (curbs && len > 4.0) {
@@ -3363,12 +3346,15 @@ class KandanganWorldBuilder {
         }
       } else if (twoWay && !oneWay && len >= 3.0) {
         const count = Math.max(1, Math.floor((len - 1.4) / 2.4));
-        const dp = [];
+        const dashGeo = new THREE.PlaneGeometry(0.14, 1.05);
+        dashGeo.rotateX(-Math.PI / 2);
         for (let i = 0; i < count; i++) {
           const dist = 0.7 + (i + 0.5) * ((len - 1.4) / count);
-          pushFlatQuad(dp, sA[0] + ux * dist, sA[1] + uz * dist, ux, uz, 0.525, 0.07, 0.028);
+          const dash = new THREE.Mesh(dashGeo, yellowLineMat);
+          dash.rotation.y = angleY;
+          dash.position.set(sA[0] + ux * dist, 0.028, sA[1] + uz * dist);
+          town.add(dash);
         }
-        town.add(flatMesh(dp, yellowLineMat));
       }
 
       // One-way road directional arrows
