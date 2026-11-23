@@ -1242,7 +1242,7 @@ const LANDMARKS = [
   }
 ];
 // [OSM] Posisi landmark pada tata letak OSM (x, z). Posisi & kamera digeser dengan selisih yang sama.
-const LANDMARK_OSM_POS = {"lapangan-lambung-mangkurat": [-17.5, -11.0], "tugu-ketupat-alfalah": [54.4, -25.9], "tugu-ketupat-hamalau": [-72.5, 100.0], "taman-palidangan-sehati": [19.5, -22.3], "rakat-hub-tower": [-12.0, -3.6], "layar-jejak-kandangan": [-22.0, -3.0], "kantor-bupati-hss": [-1.4, -17.9], "gedung-dprd-hss": [15.4, -3.0], "rsud-hasan-basry": [-30.0, 40.0], "papan-loker-3d": [23.0, -9.0], "masjid-agung-taqwa": [30.0, 22.0], "masjid-baangkat-suada": [-47.0, 11.5], "monumen-divisi-alri": [40.6, 41.6], "papan-droplink-3d": [17.2, 7.1], "pasar-los-batu": [51.5, 60.0], "gerbang-wisata-loksado": [117.8, -31.9], "air-terjun-haratai": [115.0, -50.0], "balai-adat-malaris": [125.0, -8.0], "jembatan-antaluddin": [-23.1, 15.8], "bamboo-rafting-amandit": [-26.8, 6.2]};
+const LANDMARK_OSM_POS = {"lapangan-lambung-mangkurat": [-28.0, -17.6], "tugu-ketupat-alfalah": [78.8, -43.7], "tugu-ketupat-hamalau": [-83.9, 163.2], "taman-palidangan-sehati": [33.2, -32.3], "rakat-hub-tower": [-18.1, -11.4], "layar-jejak-kandangan": [-35.2, -4.8], "kantor-bupati-hss": [-7.1, -26.7], "gedung-dprd-hss": [22.4, -5.6], "rsud-hasan-basry": [-48.0, 64.0], "papan-loker-3d": [36.8, -14.4], "masjid-agung-taqwa": [48.0, 35.2], "masjid-baangkat-suada": [-74.3, 13.7], "monumen-divisi-alri": [64.0, 72.0], "papan-droplink-3d": [24.7, 17.5], "pasar-los-batu": [81.6, 96.0], "gerbang-wisata-loksado": [189.3, -47.0], "air-terjun-haratai": [184.0, -80.0], "balai-adat-malaris": [200.0, -12.8], "jembatan-antaluddin": [-36.8, 25.3], "bamboo-rafting-amandit": [-42.9, 9.8]};
 for (const lm of LANDMARKS) {
   const t = LANDMARK_OSM_POS[lm.id];
   if (!t) continue;
@@ -3637,8 +3637,8 @@ class KandanganWorldBuilder {
     const hullMat = new THREE.MeshStandardMaterial({ color: 0x7f4f24, flatShading: true });
     const canopyMat = new THREE.MeshStandardMaterial({ color: 0xd98a1a, flatShading: true });
     for (const bc of [
-      { x: -16.1, z: 25.1, baseZ: 25.1, amp: 1.0, phase: 0, rotY: 0.5 },
-      { x: 3.0, z: 47.4, baseZ: 47.4, amp: 1.0, phase: 2.1, rotY: 1.0 }
+      { x: -25.7, z: 40.1, baseZ: 40.1, amp: 1.0, phase: 0, rotY: 0.5 },
+      { x: 4.8, z: 75.9, baseZ: 75.9, amp: 1.0, phase: 2.1, rotY: 1.0 }
     ]) {
       const boat = new THREE.Group();
       const hull = new THREE.Mesh(new THREE.BoxGeometry(0.76, 0.28, 2.3), hullMat);
@@ -3656,8 +3656,8 @@ class KandanganWorldBuilder {
     this.bambooRafts = [];
     const bambooMat = new THREE.MeshStandardMaterial({ color: 0xa4c639, flatShading: true });
     for (const rc of [
-      { baseX: -39.0, baseZ: -9.6, amp: 1.0, phase: 0.4 },
-      { baseX: -33.0, baseZ: -3.8, amp: 1.0, phase: 2.5 }
+      { baseX: -62.4, baseZ: -15.4, amp: 1.0, phase: 0.4 },
+      { baseX: -52.8, baseZ: -6.1, amp: 1.0, phase: 2.5 }
     ]) {
       const raft = new THREE.Group();
       for (let b = -2; b <= 2; b++) {
