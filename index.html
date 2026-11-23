@@ -3298,9 +3298,10 @@ class KandanganWorldBuilder {
       const midZ = (sA[1] + sB[1]) / 2;
 
       // Continuous Asphalt surface (meets flush with the roundabout outer edge without poking inside the roundabout circle)
-      const road = new THREE.Mesh(new THREE.PlaneGeometry(width, len + 0.6), asphaltMat);
-      road.rotation.x = -Math.PI / 2;
-      road.rotation.z = -angleY;
+      const roadGeo = new THREE.PlaneGeometry(width, len + 0.6);
+      roadGeo.rotateX(-Math.PI / 2);
+      const road = new THREE.Mesh(roadGeo, asphaltMat);
+      road.rotation.y = angleY;
       road.position.set(midX, 0.02, midZ);
       town.add(road);
 
@@ -3362,11 +3363,11 @@ class KandanganWorldBuilder {
       } else if (twoWay && !oneWay && len >= 3.0) {
         const count = Math.max(1, Math.floor((len - 1.4) / 2.4));
         const dashGeo = new THREE.PlaneGeometry(0.14, 1.05);
+        dashGeo.rotateX(-Math.PI / 2);
         for (let i = 0; i < count; i++) {
           const dist = 0.7 + (i + 0.5) * ((len - 1.4) / count);
           const dash = new THREE.Mesh(dashGeo, yellowLineMat);
-          dash.rotation.x = -Math.PI / 2;
-          dash.rotation.z = -angleY;
+          dash.rotation.y = angleY;
           dash.position.set(sA[0] + ux * dist, 0.028, sA[1] + uz * dist);
           town.add(dash);
         }
