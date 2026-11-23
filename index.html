@@ -756,6 +756,7 @@ import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { initWardrobe } from "./wardrobe.js";
+import { OSM } from "./osm-data.js";
 import * as SkeletonUtils from "three/addons/utils/SkeletonUtils.js";
 
 /* ============================================================================
@@ -1978,11 +1979,7 @@ class KandanganWorldBuilder {
 
     if (addTopStems) {
       const stemMat = new THREE.MeshStandardMaterial({ color: stemColor, flatShading: true });
-      const curveL = new THREE.CatmullRomCurve3([
-        new THREE.Vector3(0, 0.88, 0),
-        new THREE.Vector3(-0.12, 1.32, 0.06),
-        new THREE.Vector3(-0.48, 1.56, 0.1)
-      ]);
+      const curveL = new THREE.CatmullRomCurve3(OSM.river.map(([x, z]) => new THREE.Vector3(x, -0.02, z)));
       const curveR = new THREE.CatmullRomCurve3([
         new THREE.Vector3(0, 0.88, 0),
         new THREE.Vector3(0.14, 1.28, -0.05),
@@ -3237,9 +3234,9 @@ class KandanganWorldBuilder {
     // 1. Bundaran Tugu Dodol [0, 0] (4 approaches: South 0, East PI/2, North PI, West -PI/2)
     addTrueRoundabout(0, 0, 3.1, 6.2, [0, Math.PI / 2, Math.PI, -Math.PI / 2]);
     // 2. Bundaran Tugu Ketupat II (Jl. H.M. Yusi – Melati – Al Falah) [24, -22] (3 approaches: North PI, South 0, West -PI/2)
-    addTrueRoundabout(24, -22, 3.0, 6.0, [0, Math.PI, -Math.PI / 2]);
+    // [OSM] dihapus: addTrueRoundabout(24, -22, 3.0, 6.0, [0, Math.PI, -Math.PI / 2]);
     // 3. Bundaran Tugu Ketupat Hamalau (Gerbang Selatan HSS) [-25, 36] (North approach PI)
-    addTrueRoundabout(-25, 36, 5.5, 9.2, [Math.PI]);
+    // [OSM] dihapus: addTrueRoundabout(-25, 36, 5.5, 9.2, [Math.PI]);
 
     // Place Seamless Asphalt Junction Pads at every intersection (with flush asphalt & no raised curb rings blocking roads):
     const addFlushJunction = (jx, jz, radius = 2.8) => {
@@ -3248,7 +3245,7 @@ class KandanganWorldBuilder {
       pad.position.set(jx, 0.021, jz);
       town.add(pad);
     };
-    for (const [jx, jz, jr] of [
+    for (const [jx, jz, jr] of [] /* [OSM] daftar lama dinonaktifkan: [
       [0, -22, 2.8],
       [0, 22, 3.0],
       [0, 39, 2.7],
@@ -3260,7 +3257,7 @@ class KandanganWorldBuilder {
       [41.6, 0, 2.4],
       [31, 22, 2.5],
       [-32, 0, 2.5]
-    ]) {
+    ] */) {
       addFlushJunction(jx, jz, jr);
     }
 
@@ -3389,45 +3386,22 @@ class KandanganWorldBuilder {
     // Note: Every road meeting a roundabout is trimmed at the roundabout's outer radius (trim = 5.8 for R=6.2, trim = 5.6 for R=6.0, trim = 8.8 for R=9.2)
     // so the straight road and its curbs/markings STOP cleanly at the outer perimeter of the roundabout and NEVER cut into the circular lane!
 
-    // 1. North Central Spine: Jl. Ahmad Yani Utara (Between Lapangan Lambung NW & Gedung DPRD NE)
-    addRoadSegment([0, -22], [0, 0], { width: 4.8, oneWay: true, twoWay: false, trimEnd: 5.8 });
-
-    // 2. South Central Spine: Jl. Pangeran Antasari (Divided Dual Carriageway from Tugu Dodol [0,0] -> South Junction [0,22], then approach to Jembatan Lok Lua [0,32])
-    addRoadSegment([0, 0], [0, 22], { width: 5.4, median: true, trimStart: 5.8 });
-    addRoadSegment([0, 22], [0, 27.6], { width: 4.8, twoWay: true, curbs: false });
-    addRoadSegment([0, 36.4], [0, 39], { width: 4.8, twoWay: true, curbs: false });
-
-    // 3. East Central Spine: Jl. Merah Johansyah – Jl. S. Parman (Divided Dual Carriageway from Tugu Dodol [0,0] -> East Junction [24,0] -> Gerbang Loksado [38,0])
-    addRoadSegment([0, 0], [24, 0], { width: 5.4, median: true, trimStart: 5.8 });
-    addRoadSegment([24, 0], [41.6, 0], { width: 4.6, twoWay: true });
-
-    // 4. West Central Spine: Jl. Jenderal Sudirman (From Tugu Dodol [0,0] -> East abutment of Jembatan Antaluddin [-11.3, 0], then West abutment [-19.7, 0] -> West Bank [-25, 0] -> Simpur [-32, 0])
-    addRoadSegment([0, 0], [-11.3, 0], { width: 4.8, twoWay: true, trimStart: 5.8 });
-    addRoadSegment([-19.7, 0], [-25, 0], { width: 4.8, twoWay: true });
-    addRoadSegment([-25, 0], [-32, 0], { width: 4.2, twoWay: true });
-
-    // 5. East North-South Boulevard: Jl. Brigjen H.M. Yusi & Jl. Panglima Batur (From North [24,-34] -> Bundaran Ketupat II [24,-22] -> East Junction [24,0] -> SE Junction [24,22])
-    addRoadSegment([24, -34], [24, -22], { width: 5.4, median: true, trimEnd: 5.6 });
-    addRoadSegment([24, -22], [24, 0], { width: 5.4, median: true, trimStart: 5.6 });
-    addRoadSegment([24, 0], [24, 22], { width: 5.0, twoWay: true });
-
-    // 6. North East-West Artery: Jl. Singakarsa & Jl. Pemuda (From West Bank [-25,-22] across Jembatan Tebing Rumbih [-16,-22] -> North Center [0,-22] -> Bundaran Ketupat II [24,-22])
-    addRoadSegment([-25, -22], [-19.9, -22], { width: 4.2, oneWay: true, twoWay: false });
-    addRoadSegment([-12.1, -22], [0, -22], { width: 4.4, oneWay: true, twoWay: false });
-    addRoadSegment([0, -22], [24, -22], { width: 4.6, twoWay: true, trimEnd: 5.6 });
-
-    // 7. South Downtown East-West Artery: Jl. Letjen Sutoyo (South of Pasar Los Batu & Masjid Agung [0,22] -> [24,22])
-    addRoadSegment([0, 22], [24, 22], { width: 4.8, twoWay: true });
-    addRoadSegment([24, 22], [31, 22], { width: 4.2, twoWay: true });
-
-    // 8. West Bank Highway: Jl. Jenderal Sudirman Selatan (From [-25,-22] -> [-25,0] -> past RSUD Hasan Basry -> Bundaran Ketupat Hamalau [-25,36])
-    addRoadSegment([-25, 0], [-25, -22], { width: 4.4, oneWay: true, twoWay: false });
-    addRoadSegment([-25, 0], [-25, 36], { width: 5.2, median: true, trimEnd: 8.8 });
-
-    // 9. Loksado Nature Trails (Branching cleanly BEHIND Gerbang Loksado at [41.6, 0])
-    addRoadSegment([41.6, 0], [49, -14], { width: 3.4, twoWay: true, curbs: false });
-    addRoadSegment([41.6, 0], [50, 8], { width: 3.4, twoWay: true, curbs: false });
-    addRoadSegment([41.6, 0], [39.5, 14], { width: 3.4, twoWay: true, curbs: false });
+    // [OSM] Jaringan jalan dari map_osm.xml (osm-data.js), tata letak asli, jarak dipadatkan.
+    const OSM_R = 6.2; // jari-jari bundaran Tugu Dodol pada model
+    for (const rd of OSM.roads) {
+      if (rd.b) continue; // jembatan digambar terpisah
+      const curbsOn = rd.w >= 4.4;
+      for (let k = 0; k + 1 < rd.p.length; k++) {
+        const pA = rd.p[k], pB = rd.p[k + 1];
+        const dA = Math.hypot(pA[0], pA[1]), dB = Math.hypot(pB[0], pB[1]);
+        if (dA < OSM_R && dB < OSM_R) continue;
+        addRoadSegment(pA, pB, {
+          width: rd.w, oneWay: !!rd.ow, twoWay: !rd.ow, curbs: curbsOn,
+          trimStart: dA < OSM_R ? OSM_R - dA - 0.4 : 0,
+          trimEnd: dB < OSM_R ? OSM_R - dB - 0.4 : 0
+        });
+      }
+    }
 
     // --- 3. REALISTIC WIDE MEANDERING SUNGAI AMANDIT & 3 ARCHITECTURAL BRIDGES ---
     // Flows strictly in the clear river buffer channel so it NEVER overlaps any building or block:
@@ -3465,6 +3439,7 @@ class KandanganWorldBuilder {
     town.add(riverBankMesh, riverWaterMesh);
 
     // Architectural Bridge Builder (With sloped asphalt approach ramps so the bridge deck connects seamlessly to the road at Y=0.02)
+    const LEGACY_BRIDGES = false; // [OSM] jembatan lama di posisi grid dinonaktifkan
     const buildArchitecturalBridge = ({ x, z, rotY, length = 8.4, width = 5.0, isArchTruss = false, titleText = "" }) => {
       const bg = new THREE.Group();
       bg.position.set(x, 0, z);
@@ -3560,7 +3535,7 @@ class KandanganWorldBuilder {
 
     // Place the 3 Real Bridges orthogonally across Sungai Amandit connecting the road segments:
     // 1. Jembatan Antaluddin (On Jl. Jenderal Sudirman Z = 0, spanning X = -11.3 to -19.7)
-    town.add(
+    if (LEGACY_BRIDGES) town.add(
       buildArchitecturalBridge({
         x: -15.5,
         z: 0.0,
@@ -3572,7 +3547,7 @@ class KandanganWorldBuilder {
       })
     );
     // 2. Jembatan Lok Lua (On Jl. Pangeran Antasari X = 0, spanning Z = 27.8 to 36.2)
-    town.add(
+    if (LEGACY_BRIDGES) town.add(
       buildArchitecturalBridge({
         x: 0.0,
         z: 32.0,
@@ -3584,7 +3559,7 @@ class KandanganWorldBuilder {
       })
     );
     // 3. Jembatan Tebing Rumbih (On Jl. Singakarsa Z = -22, spanning X = -12.1 to -19.9)
-    town.add(
+    if (LEGACY_BRIDGES) town.add(
       buildArchitecturalBridge({
         x: -16.0,
         z: -22.0,
@@ -3595,7 +3570,7 @@ class KandanganWorldBuilder {
       })
     );
     // 4. Jembatan Wisata Loksado (Crossing hulu Sungai Amandit toward Balai Adat Malaris)
-    town.add(
+    if (LEGACY_BRIDGES) town.add(
       buildArchitecturalBridge({
         x: 44.77,
         z: 3.02,
@@ -3605,6 +3580,21 @@ class KandanganWorldBuilder {
         isArchTruss: false
       })
     );
+
+    // [OSM] Jembatan dari way bridge=yes
+    for (const rd of OSM.roads) {
+      if (!rd.b) continue;
+      let bi = 0, bl = 0;
+      for (let k = 0; k + 1 < rd.p.length; k++) { const l = Math.hypot(rd.p[k+1][0]-rd.p[k][0], rd.p[k+1][1]-rd.p[k][1]); if (l > bl) { bl = l; bi = k; } }
+      const [pa, pb] = [rd.p[bi], rd.p[bi + 1]];
+      // jalan menuju jembatan (ujung polyline) tetap diaspal
+      addRoadSegment(pa, pb, { width: rd.w, curbs: false });
+      town.add(buildArchitecturalBridge({
+        x: (pa[0] + pb[0]) / 2, z: (pa[1] + pb[1]) / 2,
+        rotY: Math.atan2(pb[0] - pa[0], pb[1] - pa[1]),
+        length: Math.min(Math.max(bl, 6), 12), width: rd.w, isArchTruss: false, titleText: rd.n
+      }));
+    }
 
     // Traditional Jukung Boats & Loksado Bamboo Rafts along the meandering Sungai Amandit
     this.jukungBoats = [];
