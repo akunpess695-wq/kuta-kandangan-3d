@@ -3273,7 +3273,7 @@ class KandanganWorldBuilder {
       [9.52, -40.51, 2.9],
       [-23.18, 9.37, 2.9],
       [-31.42, -11.03, 2.7],
-      [38.5, -5.0, 2.8],
+      [42.19, -4.09, 2.4],
       [-32.5, 11.5, 2.5],
       [37.5, 16.8, 2.5]
     ]) {
@@ -3306,7 +3306,7 @@ class KandanganWorldBuilder {
 
       // Raised sidewalk curbs along both outer edges (trimmed back cleanly so they never enter roundabouts or intersections)
       if (curbs && len > 4.0) {
-        const curbLen = Math.max(1.2, len - 2.6);
+        const curbLen = Math.max(1.0, len - 6.2);
         const curbGeo = new THREE.BoxGeometry(0.18, 0.09, curbLen);
         for (const side of [-1, 1]) {
           const cb = new THREE.Mesh(curbGeo, curbSideMat);
@@ -3412,7 +3412,7 @@ class KandanganWorldBuilder {
 
     // 3. East Central Spine: Jl. Merah Johansyah – Jl. S. Parman (ENE -> Simpang Panglima Batur -> Gerbang Loksado)
     addRoadSegment([0.0, 0.0], [22.25, -8.99], { width: 5.4, median: true, trimStart: 5.8 });
-    addRoadSegment([22.25, -8.99], [38.5, -5.0], { width: 4.6, twoWay: true });
+    addRoadSegment([22.25, -8.99], [42.19, -4.09], { width: 4.6, twoWay: true });
 
     // 4. West Central Spine: Jl. Jenderal Sudirman (WSW -> Jembatan Antaluddin -> West Bank -> Simpur)
     addRoadSegment([0.0, 0.0], [-10.48, 4.23], { width: 4.8, twoWay: true, trimStart: 5.8 });
@@ -3437,10 +3437,10 @@ class KandanganWorldBuilder {
     addRoadSegment([-23.18, 9.37], [-31.42, -11.03], { width: 4.4, oneWay: true, twoWay: false });
     addRoadSegment([-23.18, 9.37], [-29.5, 43.0], { width: 5.2, median: true, trimEnd: 8.8 });
 
-    // 9. Loksado Nature Trails (East of Gerbang Loksado toward Haratai, Malaris, Bamboo Rafting)
-    addRoadSegment([38.5, -5.0], [50.0, -16.0], { width: 3.4, twoWay: true, curbs: false });
-    addRoadSegment([38.5, -5.0], [51.0, 7.0], { width: 3.4, twoWay: true, curbs: false });
-    addRoadSegment([38.5, -5.0], [42.5, 15.5], { width: 3.4, twoWay: true, curbs: false });
+    // 9. Loksado Nature Trails (Branching cleanly BEHIND Gerbang Loksado at [42.19, -4.09])
+    addRoadSegment([42.19, -4.09], [50.0, -16.0], { width: 3.4, twoWay: true, curbs: false });
+    addRoadSegment([42.19, -4.09], [51.0, 7.0], { width: 3.4, twoWay: true, curbs: false });
+    addRoadSegment([42.19, -4.09], [41.5, 14.5], { width: 3.4, twoWay: true, curbs: false });
 
     // --- 3. REALISTIC WIDE MEANDERING SUNGAI AMANDIT & 3 ARCHITECTURAL BRIDGES ---
     // Flows strictly in the clear river buffer channel so it NEVER overlaps any building or block:
@@ -3604,6 +3604,17 @@ class KandanganWorldBuilder {
         rotY: 1.9548,
         length: 7.8,
         width: 4.4,
+        isArchTruss: false
+      })
+    );
+    // 4. Jembatan Wisata Loksado (Crossing hulu Sungai Amandit toward Balai Adat Malaris)
+    town.add(
+      buildArchitecturalBridge({
+        x: 45.75,
+        z: 0.39,
+        rotY: 0.6713,
+        length: 8.0,
+        width: 3.8,
         isArchTruss: false
       })
     );
